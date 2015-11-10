@@ -1,0 +1,20 @@
+# installation et configuration de webdav
+
+- name: installing dependencies
+  apt: pkg={{ item }} state=installed update_cache=yes
+  with_items:
+  - davfs2
+  - autofs
+
+- name: template auto.master and auto.webdav
+  template: src={{ item }}.j2 dest=/etc/{{ item }}
+  with_items:
+  - auto.master
+  - auto.webdav
+
+- name: template davfs secrets
+  template: src=secrets.j2 dest=/etc/davfs2/secrets
+  notify: restart autofs
+
+- name: create owncloud directory
+  file: path=/etc/some_directory state=directory mode=0755

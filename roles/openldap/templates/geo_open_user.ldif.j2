@@ -1,0 +1,12 @@
+dn: uid={{ geo_open_user }},ou=users,{{ openldap_basedn }}
+mail: {{ ldapadmin_adminemail }}
+uid: {{ geo_open_user }}
+givenName: {{ geo_open_user }}
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+sn: {{ geo_open_user }}
+cn: georchestra {{ geo_open_user }}
+userpassword: {SSHA}wSCVIRaRXKdD/7XNVBZRBJWBfDQINTMk
+

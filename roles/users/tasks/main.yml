@@ -1,0 +1,23 @@
+- name: test if georchestra group exists
+  shell: cat /etc/group
+  register: etc_group
+
+- name: create georchestra group
+  group: name=georchestra state=present gid=999
+  when: "'georchestra' not in etc_group.stdout"
+
+- name: create georchestra user
+  user: name=georchestra comment=georchestra uid=999 group=georchestra shell=/bin/bash
+
+- name: create geo_open_user user
+  user: name={{ geo_open_user }} comment={{ geo_open_user }} uid=998 group=georchestra shell=/bin/bash
+
+- name: create georchestra-restrict user
+  user: name={{ geo_restrict_user }} comment=georchestra-restreint uid=997 group=georchestra shell=/bin/bash
+
+- name: create owncloud directory
+  file: path=/home/{{ geo_open_user }}/owncloud state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+
+- name: create tmp directory
+  file: path=/home/{{ geo_open_user }}/tmp state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+

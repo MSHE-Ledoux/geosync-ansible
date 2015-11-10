@@ -1,0 +1,7 @@
+---
+dependencies:
+  - { role: users, tags: users }
+  - { role: openldap, tags: openldap }
+  - { role: geoserver, tags: geoserver }
+  - { role: webdav, tags: webdav }
+

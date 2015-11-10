@@ -1,0 +1,30 @@
+# creation du répertoire de logs de geosync
+- name: create geosync log directory
+  file: path=/var/log/geosync state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+
+# installation de librairies pour traiter les fichiers xml
+- name: installing libxml2-utils
+  apt: pkg=libxml2-utils state=installed update_cache=yes
+
+# clonage de geosync depuis github
+- name: create bin directory
+  file: path=/home/{{ geo_open_user }}/bin state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+
+- name: checkout geosync
+  sudo: yes
+  sudo_user: "{{ geo_open_user }}"
+  #git: repo=ssh://git@github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
+  #git: repo=git://github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
+  git: repo=https://github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
+
+# fichier de configuration de geosync
+- name: template geosync.conf
+  template: src=.geosync.conf.j2 dest=/home/{{ geo_open_user }}/bin/.geosync.conf
+
+# mise en place d'un cron
+- name: creates cronjob
+  cron: minute="*/1" hour="08-20" weekday="1-5"
+        name="geosync sync_data"
+        user="{{ geo_open_user }}"
+        job="/home/{{ geo_open_user }}/bin/sync_data.sh >> /var/log/geosync/cron_error.log"
+
