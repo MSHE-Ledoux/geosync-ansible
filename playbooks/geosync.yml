@@ -1,0 +1,20 @@
+- name: geosync deployment
+  hosts: my_georchestra_host
+  sudo: yes
+  roles:
+    - geosync
+  vars:
+    ocl_fqdn_server: my_owncloud_server.my-organisation.org
+    ocl_user: owncloud_user
+    ocl_passwd: owncloud_password
+    geo_fqdn_server: my_georchestra_server.my-organisation.org
+    geo_fqdn_server_url: https://my_georchestra_server.my-organisation.org
+    geo_open_user: owncloud_user
+    geo_open_passwd: owncloud_user
+    geo_restrict_user: unused
+    openldap_rootdn: cn=admin,dc=my-organisation,dc=org
+    ldapadmin_adminemail: admin@my-organisation.org
+    openldap_basedn: dc=georchestra,dc=my-organisation,dc=org
+    openldap_rootpw: secret
+    workspace: geosync
+    datastore: shpowncloud # Attention !!! ne pas finir le nom par "shp" sinon créer un datastore pour 1 seul shapefile
