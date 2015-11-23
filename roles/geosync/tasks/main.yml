@@ -7,19 +7,23 @@
   apt: pkg=libxml2-utils state=installed update_cache=yes
 
 # clonage de geosync depuis github
-- name: create bin directory
-  file: path=/home/{{ geo_open_user }}/bin state=directory owner={{ geo_open_user }} group=georchestra mode=0755
-
 - name: checkout geosync
   sudo: yes
   sudo_user: "{{ geo_open_user }}"
   #git: repo=ssh://git@github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
   #git: repo=git://github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
   git: repo=https://github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
+       version={{ git_branch }}
+
+# change git url : https -> ssh
+- name: cd bin && ~/git_seturl.sh
+  command: chdir=/home/{{ geo_open_user }}/bin /home/{{ geo_open_user }}/git_seturl.sh
+  become: yes
+  become_user: "{{ geo_open_user }}"
 
 # fichier de configuration de geosync
 - name: template geosync.conf
-  template: src=.geosync.conf.j2 dest=/home/{{ geo_open_user }}/bin/.geosync.conf
+  template: src=geosync.conf.j2 dest=/home/{{ geo_open_user }}/bin/.geosync.conf
 
 # mise en place d'un cron
 - name: creates cronjob
