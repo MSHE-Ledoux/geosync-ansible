@@ -26,3 +26,4 @@
 - name: installing python-ldap
   apt: pkg=python-ldap state=installed update_cache=yes
 
+          fichier modifié...
