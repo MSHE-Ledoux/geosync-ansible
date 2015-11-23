@@ -13,8 +13,12 @@
     geo_open_passwd: owncloud_user
     geo_restrict_user: unused
     openldap_rootdn: cn=admin,dc=my-organisation,dc=org
-    ldapadmin_adminemail: admin@my-organisation.org
+    openldap_adminemail: admin@my-organisation.org
     openldap_basedn: dc=georchestra,dc=my-organisation,dc=org
     openldap_rootpw: secret
-    workspace: geosync
-    datastore: shpowncloud # Attention !!! ne pas finir le nom par "shp" sinon créer un datastore pour 1 seul shapefile
+    geoserver_workspace: geosync
+    geoserver_datastore: shpowncloud # Attention !!! ne pas finir le nom par "shp" sinon créer un datastore pour 1 seul shapefile
+    git_branch: 0.4
+    git_user_name: my_github_user
+    git_user_email: my_github_user@my-organisation.org
+
