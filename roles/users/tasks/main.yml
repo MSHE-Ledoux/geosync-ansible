@@ -15,6 +15,21 @@
 - name: create geo_open_user user
   user: name={{ geo_open_user }} comment={{ geo_open_user }} uid=998 group=georchestra shell=/bin/bash
 
+# creation du répertoire /home/geo_open_user/.ssh
+- name: create .ssh directory
+  file: path=/home/{{ geo_open_user }}/.ssh state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+
+# copie des clés de l'utilisateur geo_open_user
+- name: copy id_rsa.pub in .ssh directrory
+  copy: src=/home/echiarello/certificats/georchestra-ouvert/id_rsa.pub 
+        dest=/home/{{ geo_open_user }}/.ssh/id_rsa.pub 
+        owner={{ geo_open_user }} group=georchestra mode=0644
+
+- name: copy id_rsa in .ssh directrory
+  copy: src=/home/echiarello/certificats/georchestra-ouvert/id_rsa
+        dest=/home/{{ geo_open_user }}/.ssh/id_rsa
+        owner={{ geo_open_user }} group=georchestra mode=0600
+
 # configurer github pour geo_open_user
 - name: template .gitconfig
   template: src=gitconfig.j2 dest=/home/{{ geo_open_user }}/.gitconfig
