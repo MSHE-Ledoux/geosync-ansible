@@ -1,3 +1,4 @@
+# creation du groupe georchestra
 - name: test if georchestra group exists
   shell: cat /etc/group
   register: etc_group
@@ -6,9 +7,11 @@
   group: name=georchestra state=present gid=999
   when: "'georchestra' not in etc_group.stdout"
 
+# creation de l'utilisateur georchestra
 - name: create georchestra user
   user: name=georchestra comment=georchestra uid=999 group=georchestra shell=/bin/bash
 
+# creation de l'utilisateur geo_open_user
 - name: create geo_open_user user
   user: name={{ geo_open_user }} comment={{ geo_open_user }} uid=998 group=georchestra shell=/bin/bash
 
@@ -16,16 +19,20 @@
 - name: template .gitconfig
   template: src=gitconfig.j2 dest=/home/{{ geo_open_user }}/.gitconfig
 
-# remplacer https par ssh pour les connexions vers github
+# script pour remplacer https par ssh pour les connexions vers github
+# sera exécuté dans roles/geosync/tasks/main.yml
 - name: template git_seturl.sh
   template: src=git_seturl.sh.j2 dest=/home/{{ geo_open_user }}/git_seturl.sh owner={{ geo_open_user }} group=georchestra mode=0755
 
+# creation de l'utilisateur geo_restrict_user
 - name: create georchestra-restrict user
   user: name={{ geo_restrict_user }} comment=georchestra-restreint uid=997 group=georchestra shell=/bin/bash
 
+# creation du répertoire /home/geo_open_user/owncloud
 - name: create owncloud directory
   file: path=/home/{{ geo_open_user }}/owncloud state=directory owner={{ geo_open_user }} group=georchestra mode=0755
 
+# creation du répertoire /home/geo_open_user/tmp
 - name: create tmp directory
   file: path=/home/{{ geo_open_user }}/tmp state=directory owner={{ geo_open_user }} group=georchestra mode=0755
 
