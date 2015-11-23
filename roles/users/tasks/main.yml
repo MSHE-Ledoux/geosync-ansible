@@ -12,6 +12,14 @@
 - name: create geo_open_user user
   user: name={{ geo_open_user }} comment={{ geo_open_user }} uid=998 group=georchestra shell=/bin/bash
 
+# configurer github pour geo_open_user
+- name: template .gitconfig
+  template: src=gitconfig.j2 dest=/home/{{ geo_open_user }}/.gitconfig
+
+# remplacer https par ssh pour les connexions vers github
+- name: template git_seturl.sh
+  template: src=git_seturl.sh.j2 dest=/home/{{ geo_open_user }}/git_seturl.sh owner={{ geo_open_user }} group=georchestra mode=0755
+
 - name: create georchestra-restrict user
   user: name={{ geo_restrict_user }} comment=georchestra-restreint uid=997 group=georchestra shell=/bin/bash
 
