@@ -17,4 +17,5 @@
   notify: restart autofs
 
 - name: create owncloud directory
-  file: path=/etc/some_directory state=directory mode=0755
+  file: path=/home/{{ geo_open_user }}/owncloud state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+
