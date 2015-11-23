@@ -37,7 +37,9 @@
 # script pour remplacer https par ssh pour les connexions vers github
 # sera exécuté dans roles/geosync/tasks/main.yml
 - name: template git_seturl.sh
-  template: src=git_seturl.sh.j2 dest=/home/{{ geo_open_user }}/git_seturl.sh owner={{ geo_open_user }} group=georchestra mode=0755
+  template: src=git_seturl.sh.j2 
+            dest=/home/{{ geo_open_user }}/git_seturl.sh 
+            owner={{ geo_open_user }} group=georchestra mode=0755
 
 # creation de l'utilisateur geo_restrict_user
 - name: create georchestra-restrict user
@@ -45,7 +47,9 @@
 
 # creation du répertoire /home/geo_open_user/owncloud
 - name: create owncloud directory
-  file: path=/home/{{ geo_open_user }}/owncloud state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+  file: path=/home/{{ geo_open_user }}/owncloud 
+        state=directory 
+        owner={{ geo_open_user }} group=georchestra mode=0755
 
 # creation du répertoire /home/geo_open_user/tmp
 - name: create tmp directory
