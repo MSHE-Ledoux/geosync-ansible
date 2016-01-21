@@ -30,7 +30,7 @@
                 <enabled>true</enabled>
                 <connectionParameters>
                 <entry key=\"charset\">UTF-8</entry>
-                <entry key=\"url\">file:data/$geoserver_datastore</entry>
+                <entry key=\"url\">file:data/{{ geoserver_datastore }}</entry>
                 <entry key=\"enable spatial index\">true</entry>
                 <entry key=\"cache and reuse memory maps\">true</entry>
                 </connectionParameters> 
