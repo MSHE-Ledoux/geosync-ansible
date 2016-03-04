@@ -5,35 +5,35 @@
 # création de l'espace de travail geosync
 - name: create the workspace geosync
   command: >
-    curl -v -u {{ geo_open_user }}:{{ geo_open_passwd }} -XPOST -H "Content-type: text/xml"
-         -d "<workspace><name>{{ geoserver_workspace }}</name></workspace>"
-            "{{ geo_fqdn_server_url }}/geoserver/rest/workspaces"
+    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
+         -d "<workspace><name>{{ geoserver.workspace }}</name></workspace>"
+            "{{ georchestra.url }}/geoserver/rest/workspaces"
 
 # geosync est le workspace par défaut 
 - name: define the default workspace
   command: >
-    curl -v -u {{ geo_open_user }}:{{ geo_open_passwd }} -XPUT -H "Content-type: text/xml" \
-         -d "<workspace><name>{{ geoserver_workspace }}</name></workspace>" \
-            "{{ geo_fqdn_server_url }}/geoserver/rest/workspaces/default"
+    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPUT -H "Content-type: text/xml" \
+         -d "<workspace><name>{{ geoserver.workspace }}</name></workspace>" \
+            "{{ georchestra.url }}/geoserver/rest/workspaces/default"
  
 # création du datastore qui sera utilisé par l'entrepôt dans geoserver
 - name: create owncloud directory
-  file: path=/var/www/geoserver/data/data/{{ geoserver_datastore }} state=directory owner=tomcat8 group=tomcat8 mode=0755
+  file: path=/var/www/geoserver/data/data/{{ geoserver.datastore }} state=directory owner=tomcat8 group=tomcat8 mode=0755
 
 # créer l'entrepôt (datastore) de shp : "owncloud" # attention : le datastore doit être en UTF-8
 - name: create shp geoserver datastore
   command: >
-    curl -v -u {{ geo_open_user }}:{{ geo_open_passwd }} -XPOST -H "Content-type: text/xml"
-         -d "<dataStore><name>{{ geoserver_datastore }}</name>
+    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
+         -d "<dataStore><name>{{ geoserver.datastore }}</name>
                 <description>shp dans owncloud</description>
                 <type>Directory of spatial files (shapefiles)</type>
                 <enabled>true</enabled>
                 <connectionParameters>
                 <entry key=\"charset\">UTF-8</entry>
-                <entry key=\"url\">file:data/{{ geoserver_datastore }}</entry>
+                <entry key=\"url\">file:data/{{ geoserver.datastore }}</entry>
                 <entry key=\"enable spatial index\">true</entry>
                 <entry key=\"cache and reuse memory maps\">true</entry>
                 </connectionParameters> 
              </dataStore>"
-         "{{ geo_fqdn_server_url }}/geoserver/rest/workspaces/{{ geoserver_workspace }}/datastores"
+         "{{ georchestra.url }}/geoserver/rest/workspaces/{{ geoserver.workspace }}/datastores"
 

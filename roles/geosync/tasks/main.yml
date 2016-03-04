@@ -1,6 +1,6 @@
 # creation du répertoire de logs de geosync
 - name: create geosync log directory
-  file: path=/var/log/geosync state=directory owner={{ geo_open_user }} group=georchestra mode=0755
+  file: path=/var/log/geosync state=directory owner={{ georchestra.open_user }} group=georchestra mode=0755
 
 # installation de librairies pour traiter les fichiers xml
 - name: installing libxml2-utils
@@ -9,33 +9,33 @@
 # clonage de geosync depuis github
 - name: checkout geosync
   sudo: yes
-  sudo_user: "{{ geo_open_user }}"
-  #git: repo=ssh://git@github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
-  #git: repo=git://github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
-  git: repo=https://github.com/MaxiReglisse/geosync.git dest=/home/{{ geo_open_user }}/bin
-       version={{ git_branch }}
+  sudo_user: "{{ georchestra.open_user }}"
+  #git: repo=ssh://git@github.com/MaxiReglisse/geosync.git dest=/home/{{ georchestra.open_user }}/bin
+  #git: repo=git://github.com/MaxiReglisse/geosync.git dest=/home/{{ georchestra.open_user }}/bin
+  git: repo=https://github.com/MaxiReglisse/geosync.git dest=/home/{{ georchestra.open_user }}/bin
+       version={{ git.branch }}
 
 # change git url : https -> ssh
 - name: cd bin && ~/git_seturl.sh
-  command: chdir=/home/{{ geo_open_user }}/bin /home/{{ geo_open_user }}/git_seturl.sh
+  command: chdir=/home/{{ georchestra.open_user }}/bin /home/{{ georchestra.open_user }}/git_seturl.sh
   become: yes
-  become_user: "{{ geo_open_user }}"
+  become_user: "{{ georchestra.open_user }}"
 
 # fichier de configuration de geosync
 - name: template geosync.conf
-  template: src=geosync.conf.j2 dest=/home/{{ geo_open_user }}/bin/.geosync.conf
+  template: src=geosync.conf.j2 dest=/home/{{ georchestra.open_user }}/bin/.geosync.conf
 
 # mise en place d'un cron pour la synchronisation
 - name: creates cronjob sync_data
   cron: minute="*/1" hour="08-20" weekday="1-5"
           name="geosync - importe les couches partagées via owncloud dans le geoserver"
-        user="{{ geo_open_user }}"
-        job="/home/{{ geo_open_user }}/bin/sync_data.sh >> /var/log/geosync/cron_error.log"
+        user="{{ georchestra.open_user }}"
+        job="/home/{{ georchestra.open_user }}/bin/sync_data.sh >> /var/log/geosync/cron_error.log"
 
 # mise en place d'un cron pour le nettoyage
 - name: creates cronjob clean_data
   cron: minute="0" hour="22" weekday="1-5"
         name="geosync - nettoie le geoserver des couches qui ne sont plus partagées avec lui"
-        user="{{ geo_open_user }}"
-        job="/home/{{ geo_open_user }}/bin/clean_data.sh >> /var/log/geosync/cron_error.log"
+        user="{{ georchestra.open_user }}"
+        job="/home/{{ georchestra.open_user }}/bin/clean_data.sh >> /var/log/geosync/cron_error.log"
 
