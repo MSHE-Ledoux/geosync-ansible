@@ -1,7 +1,8 @@
 ---
 dependencies:
-  - { role: users, tags: users }
-  - { role: openldap, tags: openldap }
-  - { role: geoserver, tags: geoserver }
-  - { role: webdav, tags: webdav }
+  - { role: users,      tags: users }
+  - { role: webdav,     tags: webdav }
+  - { role: openldap,   tags: openldap }
+  - { role: postgresql, tags: postgresql }
+  - { role: geoserver,  tags: geoserver }
 

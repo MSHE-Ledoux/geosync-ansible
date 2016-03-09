@@ -23,8 +23,15 @@
     }
     openldap_adminemail: admin@my-organisation.org,
     geoserver: {
+      datadir: /opt/data/geoserver/,
       workspace: geosync,
       datastore: shpowncloud, # Attention !!! ne pas finir le nom par "shp" sinon créer un datastore pour 1 seul shapefile
+      pg_datastore: postgis_data,
+      db: {
+        name: geoserver_data,
+        user: geosync,
+        pass: secret,
+      }
     }
     git: {
       branch: master,
@@ -32,4 +39,8 @@
         name: my_github_user,
         email: my_github_user@my-organisation.org,
       }
+    }
+    my_networks: {
+      net1: 192.168.1.0/24,
+      net2: 192.168.2.0/24,
     }

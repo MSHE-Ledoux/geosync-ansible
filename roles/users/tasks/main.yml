@@ -15,7 +15,13 @@
 - name: create georchestra.open_user user
   user: name={{ georchestra.open_user }} comment={{ georchestra.open_user }} uid=998 group=georchestra shell=/bin/bash
 
-# creation du répertoire /home/georchestra.open_user/.ssh
+# le fichier .pgpass permet à georchestra.open_user de se connecter sur la base geoserver.db.name
+- name: template pgpass for georchestra.open_user user
+  template: src=pgpass.j2 
+            dest=/home/{{ georchestra.open_user }}/.pgpass
+            owner={{ georchestra.open_user }} group=georchestra mode=0600  
+
+# /home/georchestra.open_user/.ssh contient les clés publique et privée
 - name: create .ssh directory
   file: path=/home/{{ georchestra.open_user }}/.ssh state=directory owner={{ georchestra.open_user }} group=georchestra mode=0755
 

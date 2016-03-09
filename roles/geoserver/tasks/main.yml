@@ -1,27 +1,28 @@
 # répertoire d'accueil des shapefiles
-- name: create data geoserver directory
-  file: path=/var/www/geoserver/data/data state=directory owner=tomcat8 group=tomcat8 mode=0755
+- name: create geoserver data directory
+  file: path={{ geoserver.datadir }}/data state=directory owner=tomcat8 group=tomcat8 mode=0755
 
 # création de l'espace de travail geosync
-- name: create the workspace geosync
+- name: create geoserver workspace
   command: >
     curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
          -d "<workspace><name>{{ geoserver.workspace }}</name></workspace>"
             "{{ georchestra.url }}/geoserver/rest/workspaces"
 
 # geosync est le workspace par défaut 
-- name: define the default workspace
+- name: define geoserver default workspace
   command: >
     curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPUT -H "Content-type: text/xml" \
          -d "<workspace><name>{{ geoserver.workspace }}</name></workspace>" \
             "{{ georchestra.url }}/geoserver/rest/workspaces/default"
  
-# création du datastore qui sera utilisé par l'entrepôt dans geoserver
-- name: create owncloud directory
-  file: path=/var/www/geoserver/data/data/{{ geoserver.datastore }} state=directory owner=tomcat8 group=tomcat8 mode=0755
+# création du datastore au sein du workspace shpowncloud
+- name: create geoserver datastore
+  file: path={{ geoserver.datadir }}/data/{{ geoserver.workspace }}/{{ geoserver.datastore }} 
+        state=directory owner=tomcat8 group=tomcat8 mode=0755
 
 # créer l'entrepôt (datastore) de shp : "owncloud" # attention : le datastore doit être en UTF-8
-- name: create shp geoserver datastore
+- name: create geoserver shp datastore
   command: >
     curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
          -d "<dataStore><name>{{ geoserver.datastore }}</name>
@@ -30,10 +31,26 @@
                 <enabled>true</enabled>
                 <connectionParameters>
                 <entry key=\"charset\">UTF-8</entry>
-                <entry key=\"url\">file:data/{{ geoserver.datastore }}</entry>
+                <entry key=\"url\">file:data/{{ geoserver.workspace }}/{{ geoserver.datastore }}</entry>
                 <entry key=\"enable spatial index\">true</entry>
                 <entry key=\"cache and reuse memory maps\">true</entry>
                 </connectionParameters> 
              </dataStore>"
          "{{ georchestra.url }}/geoserver/rest/workspaces/{{ geoserver.workspace }}/datastores"
 
+# créer l'entrepôt postgis de shp
+- name: create geoserver postgis datastore
+  command: >
+    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
+         -d "<dataStore>
+               <name>{{ geoserver.pg_datastore }}</name>
+               <connectionParameters>
+                 <host>localhost</host>
+                 <port>5432</port>
+                 <database>{{ geoserver.db.name }}</database>
+                 <user>{{ geoserver.db.user }}</user>
+                 <passwd>{{ geoserver.db.pass }}</passwd>
+                 <dbtype>postgis</dbtype>
+               </connectionParameters>
+             </dataStore>"
+         https://{{ georchestra.fqdn }}/geoserver/rest/workspaces/geosync/datastores
