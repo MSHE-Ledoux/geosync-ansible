@@ -29,8 +29,18 @@
          state=present
   with_dict: georchestra.user
 
+# davfs2 doit fonctionner sans verrou
 - name: modify /etc/davfs2/davfs2.conf
   replace: dest=/etc/davfs2/davfs2.conf
            regexp='#\suse_locks\s+1'
            replace='use_locks 0'
+
+# setuid bit sur mount.davfs pour permettre le montage en mode utilisateur
+- name: setuid /usr/sbin/mount.davfs
+  file: path=/usr/sbin/mount.davfs state=file mode="u=rws,g=rx,o=rx"
+
+# georchestra.user.xxxx doivent être membre du group davfs2
+- name: setting georchestra.user.xxxx in davfs2 group
+  user: name={{ item.value.name }} groups=davfs2 append=yes
+  with_dict: georchestra.user
 
