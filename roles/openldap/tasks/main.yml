@@ -1,30 +1,37 @@
 - name: create LDAP /tmp directory
   file: path=/tmp/LDAP state=directory owner=tomcat8 group=tomcat8 mode=0755
 
-- name: template georchestra.open_user.ldif
-  template: src=georchestra.open_user.ldif.j2 dest=/tmp/LDAP/georchestra.open_user.ldif
+- name: template georchestra-xxxx.ldif
+  #debug: msg="user {{ item.key }} is {{ item.value.name }} - file is {{ item.value.file }}"
+  template: src={{ item.value.file }}.j2 dest=/tmp/LDAP/{{ item.value.file }}
+  with_dict: georchestra.user
 
-- name: check if the {{ georchestra.open_user }} user already exists
-  command: ldapsearch -x -b {{ openldap.basedn }} uid={{ georchestra.open_user }}
+- name: check if georchestra.xxxx_user users already exist
+  command: ldapsearch -x -b {{ openldap.basedn }} uid={{ item.value.name }}
   ignore_errors: true
-  register: test_ldap
+  register: tests_ldap
+  with_dict: georchestra.user
 
-# afficher le contenu de la variable test_ldap
-- debug: msg="{{test_ldap.stdout}}"
+- debug: var="{{item}}"
+  with_items: tests_ldap.results
 
-- name: slapadd georchestra.open_user.ldif
-  command: ldapadd -f /tmp/LDAP/georchestra.open_user.ldif -D {{ openldap.rootdn }} -w {{ openldap.rootpw }}
-  when: "test_ldap is defined and '# numEntries: 1' not in test_ldap.stdout"
-# en cas d'erreur, le supprimer à la main
-# ldapdelete 'uid=georchestra-ouvert,ou=users,dc=georchestra,dc=univ-fcomte,dc=fr' -D cn=admin,dc=georchestra,dc=univ-fcomte,dc=fr -W
+- debug: msg="item.stdout={{item.stdout}}, item.changed={{item.changed}}"
+  with_items: tests_ldap.results
 
-- name: template georchestra.open_user_groupes.ldif
-  template: src=georchestra.open_user_groupes.ldif.j2 dest=/tmp/LDAP/georchestra.open_user_groupes.ldif
-  when: "test_ldap.stdout is defined and '# numEntries: 1' not in test_ldap.stdout"
+- name: slapadd georchestra.xxxx_user
+  command: ldapadd -f /tmp/LDAP/{{item.item.value.file}} -D {{ openldap.rootdn }} -w {{ openldap.rootpw }}
+  when: "item.stdout is defined and '# numEntries: 1' not in item.stdout"
+  with_items: tests_ldap.results
 
-- name: ldapmodify
-  command: ldapmodify -f /tmp/LDAP/georchestra.open_user_groupes.ldif -D {{ openldap.rootdn }} -w {{ openldap.rootpw }}
-  when: "test_ldap.stdout is defined and '# numEntries: 1' not in test_ldap.stdout"
+- name: template georchestra.xxxx_groupes.ldif
+  template: src={{item.item.value.groups}}.j2 dest=/tmp/LDAP/{{item.item.value.groups}}.ldif
+  when: "item.stdout is defined and '# numEntries: 1' not in item.stdout"
+  with_items: tests_ldap.results
+
+- name: add georchestra.xxxx to admin georchestra groups
+  command: ldapmodify -f /tmp/LDAP/{{item.item.value.groups}}.ldif -D {{ openldap.rootdn }} -w {{ openldap.rootpw }}
+  when: "item.stdout is defined and '# numEntries: 1' not in item.stdout"
+  with_items: tests_ldap.results
 
 - name: installing python-ldap
   apt: pkg=python-ldap state=installed update_cache=yes

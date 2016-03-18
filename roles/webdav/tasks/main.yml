@@ -1,21 +1,36 @@
 # installation et configuration de webdav
 
-- name: installing dependencies
-  apt: pkg={{ item }} state=installed update_cache=yes
-  with_items:
-  - davfs2
-  - autofs
+- name: installing davfs2
+  apt: pkg=davfs2 state=installed update_cache=yes
 
-- name: template auto.master and auto.webdav
-  template: src={{ item }}.j2 dest=/etc/{{ item }}
-  with_items:
-  - auto.master
-  - auto.webdav
-
-- name: template davfs secrets
-  template: src=secrets.j2 dest=/etc/davfs2/secrets
-  notify: restart autofs
-
+# création du répertoire /home/georchestra.user.xxxx/owncloud nécessaire au montage webdav
 - name: create owncloud directory
-  file: path=/home/{{ georchestra.open_user }}/owncloud state=directory owner={{ georchestra.open_user }} group=georchestra mode=0755
+  file: path=/home/{{ item.value.name }}/owncloud state=directory owner={{ item.value.name }} group=georchestra mode=0755
+  with_dict: georchestra.user
+
+# création du répertoire /home/georchestra.user.xxxx/.davfs2
+- name: create .davfs2 directory
+  file: path=/home/{{ item.value.name }}/.davfs2 state=directory owner={{ item.value.name }} group=georchestra mode=0755
+  with_dict: georchestra.user
+
+# le fichier .davfs2/secret permet à georchestra.user.xxxx de réaliser le montage webdav vers owncloud
+- name: template pgpass for georchestra.user.xxxx user
+  template: src=secrets.j2
+            dest=/home/{{ item.value.name }}/.davfs2/secrets
+            owner={{ item.value.name }} group=georchestra mode=0600  
+  with_dict: georchestra.user
+
+# modification de /etc/fstab pour le montage webdav
+- name: modify /etc/fstab
+  mount: name=/home/{{ item.value.name }}/owncloud
+         src=https://{{ owncloud.fqdn }}/owncloud/remote.php/webdav
+         fstype=davfs 
+         opts=rw,user,noauto 
+         state=present
+  with_dict: georchestra.user
+
+- name: modify /etc/davfs2/davfs2.conf
+  replace: dest=/etc/davfs2/davfs2.conf
+           regexp='#\suse_locks\s+1'
+           replace='use_locks 0'
 

@@ -12,9 +12,32 @@
     georchestra: {
       fqdn: my_georchestra_server.my-organisation.org,
       url: "https://my_georchestra_server.my-organisation.org",
-      open_user: georchestra-ouvert,
-      open_passwd: georchestra-ouvert_password,
-      restrict_user: georchestra-restreint,
+      user: {
+        open: {
+          uid: 998,
+          name: georchestra-ouvert,
+          passwd: georchestra-ouvert_password,
+          file: open-user.ldif,
+          groups: open-user-groups.ldif,
+          workspace: geosync-ouvert,
+          datastore: geosync_shp_open, # Attention !!! ne pas finir le nom par "shp" sinon créer un datastore pour 1 seul shapefile
+          pg_datastore: geosync_pg_open,
+          db: geosync_data_open,
+          logs: geosync-open,
+        },
+        rsct: {
+          uid: 997,
+          name: georchestra-restreint,
+          passwd: georchestra-restreint_password,
+          file: rsct-user.ldif,
+          groups: rsct-user-groups.ldif,
+          workspace: geosync-restreint,
+          datastore: geosync_shp_rsct,
+          pg_datastore: geosync_pg_rsct,
+          db: geosync_data_rsct,
+          logs: geosync-rsct,
+        }
+      }
     }
     openldap: {
       basedn: "dc=georchestra,dc=my-organisation,dc=org",

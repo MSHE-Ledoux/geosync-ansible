@@ -1,3 +1,8 @@
 host={{ georchestra.url }}
-login={{ georchestra.open_user }}
-pass={{ georchestra.open_passwd }}
+login={{ item.value.name }}
+passwd={{ item.value.passwd }}
+workspace={{ item.value.workspace }}
+datastore={{ item.value.datastore }}
+pg_datastore={{ item.value.pg_datastore }}
+db={{ item.value.db }}
+logs={{ item.value.logs }}

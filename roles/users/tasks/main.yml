@@ -11,53 +11,58 @@
 - name: create georchestra user
   user: name=georchestra comment=georchestra uid=999 group=georchestra shell=/bin/bash
 
-# creation de l'utilisateur georchestra.open_user
-- name: create georchestra.open_user user
-  user: name={{ georchestra.open_user }} comment={{ georchestra.open_user }} uid=998 group=georchestra shell=/bin/bash
+# creation des utilisateurs georchestra.user.xxxx
+- name: create georchestra.user.xxxx user
+  user: name={{ item.value.name }} comment={{ item.value.name }} uid={{ item.value.uid }} group=georchestra shell=/bin/bash
+  with_dict: georchestra.user
 
-# le fichier .pgpass permet à georchestra.open_user de se connecter sur la base geoserver.db.name
-- name: template pgpass for georchestra.open_user user
+# le fichier .pgpass permet à georchestra.user.xxxx de se connecter sur la base georchestra.user.xxxx.db
+- name: template pgpass for georchestra.user.xxxx user
   template: src=pgpass.j2 
-            dest=/home/{{ georchestra.open_user }}/.pgpass
-            owner={{ georchestra.open_user }} group=georchestra mode=0600  
+            dest=/home/{{ item.value.name }}/.pgpass
+            owner={{ item.value.name }} group=georchestra mode=0600  
+  with_dict: georchestra.user
 
 # /home/georchestra.open_user/.ssh contient les clés publique et privée
 - name: create .ssh directory
-  file: path=/home/{{ georchestra.open_user }}/.ssh state=directory owner={{ georchestra.open_user }} group=georchestra mode=0755
+  file: path=/home/{{ item.value.name }}/.ssh state=directory owner={{ item.value.name }} group=georchestra mode=0755
+  with_dict: georchestra.user
 
-# copie des clés de l'utilisateur georchestra.open_user
+# copie des clés de l'utilisateur georchestra.user.xxxx
 - name: copy id_rsa.pub in .ssh directrory
   copy: src=/home/echiarello/certificats/georchestra-ouvert/id_rsa.pub 
-        dest=/home/{{ georchestra.open_user }}/.ssh/id_rsa.pub 
-        owner={{ georchestra.open_user }} group=georchestra mode=0644
+        dest=/home/{{ item.value.name }}/.ssh/id_rsa.pub 
+        owner={{ item.value.name }} group=georchestra mode=0644
+  with_dict: georchestra.user
 
 - name: copy id_rsa in .ssh directrory
   copy: src=/home/echiarello/certificats/georchestra-ouvert/id_rsa
-        dest=/home/{{ georchestra.open_user }}/.ssh/id_rsa
-        owner={{ georchestra.open_user }} group=georchestra mode=0600
+        dest=/home/{{ item.value.name }}/.ssh/id_rsa
+        owner={{ item.value.name }} group=georchestra mode=0600
+  with_dict: georchestra.user
 
-# configurer github pour georchestra.open_user
+# configurer github pour georchestra.user.xxxx
 - name: template .gitconfig
-  template: src=gitconfig.j2 dest=/home/{{ georchestra.open_user }}/.gitconfig
+  template: src=gitconfig.j2 dest=/home/{{ item.value.name }}/.gitconfig
+  with_dict: georchestra.user
 
 # script pour remplacer https par ssh pour les connexions vers github
 # sera exécuté dans roles/geosync/tasks/main.yml
 - name: template git_seturl.sh
   template: src=git_seturl.sh.j2 
-            dest=/home/{{ georchestra.open_user }}/git_seturl.sh 
-            owner={{ georchestra.open_user }} group=georchestra mode=0755
+            dest=/home/{{ item.value.name }}/git_seturl.sh 
+            owner={{ item.value.name }} group=georchestra mode=0755
+  with_dict: georchestra.user
 
-# creation de l'utilisateur georchestra.restrict_user
-- name: create georchestra-restrict user
-  user: name={{ georchestra.restrict_user }} comment=georchestra-restreint uid=997 group=georchestra shell=/bin/bash
-
-# creation du répertoire /home/georchestra.open_user/owncloud
+# création du répertoire /home/georchestra.user.xxxx/owncloud
 - name: create owncloud directory
-  file: path=/home/{{ georchestra.open_user }}/owncloud 
+  file: path=/home/{{ item.value.name }}/owncloud 
         state=directory 
-        owner={{ georchestra.open_user }} group=georchestra mode=0755
+        owner={{ item.value.name }} group=georchestra mode=0755
+  with_dict: georchestra.user
 
-# creation du répertoire /home/georchestra.open_user/tmp
+# création du répertoire /home/georchestra.open_user/tmp
 - name: create tmp directory
-  file: path=/home/{{ georchestra.open_user }}/tmp state=directory owner={{ georchestra.open_user }} group=georchestra mode=0755
+  file: path=/home/{{ item.value.name }}/tmp state=directory owner={{ item.value.name }} group=georchestra mode=0755
+  with_dict: georchestra.user
 

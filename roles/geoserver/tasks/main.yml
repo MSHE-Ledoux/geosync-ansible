@@ -2,55 +2,70 @@
 - name: create geoserver data directory
   file: path={{ geoserver.datadir }}/data state=directory owner=tomcat8 group=tomcat8 mode=0755
 
-# création de l'espace de travail geosync
-- name: create geoserver workspace
+# création des espaces de travail geosync : ouvert et restreint
+- name: create geoserver workspaces
   command: >
-    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
-         -d "<workspace><name>{{ geoserver.workspace }}</name></workspace>"
+    curl -v -u {{ item.value.name }}:{{ item.value.passwd }} -XPOST -H "Content-type: text/xml"
+         -d "<workspace><name>{{ item.value.workspace }}</name></workspace>"
             "{{ georchestra.url }}/geoserver/rest/workspaces"
+  with_dict: georchestra.user
 
-# geosync est le workspace par défaut 
+- name: gestion des droits
+  command: >
+    curl -v -u {{ georchestra.user.open.name }}:{{ georchestra.user.open.passwd }} -XPOST -H "Content-type: text/xml"
+         -d '<?xml version="1.0" encoding="UTF-8"?>
+             <rules>
+               <rule resource="{{ georchestra.user.open.workspace }}.*.r">ROLE_ANONYMOUS,ROLE_AUTHENTICATED,GROUP_ADMIN,ADMIN</rule>
+               <rule resource="{{ georchestra.user.rsct.workspace }}.*.r">ROLE_AUTHENTICATED,GROUP_ADMIN,ADMIN</rule>
+             </rules>'
+         "{{ georchestra.url }}/geoserver/rest/security/acl/layers.xml"
+
+# geosync-ouvert est le workspace par défaut 
 - name: define geoserver default workspace
   command: >
-    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPUT -H "Content-type: text/xml" \
-         -d "<workspace><name>{{ geoserver.workspace }}</name></workspace>" \
+    curl -v -u {{ georchestra.user.open.name }}:{{ georchestra.user.open.passwd }} -XPUT -H "Content-type: text/xml" \
+         -d "<workspace><name>{{ georchestra.user.open.workspace }}</name></workspace>" \
             "{{ georchestra.url }}/geoserver/rest/workspaces/default"
  
-# création du datastore au sein du workspace shpowncloud
-- name: create geoserver datastore
-  file: path={{ geoserver.datadir }}/data/{{ geoserver.workspace }}/{{ geoserver.datastore }} 
+# création des répertoires associés aux datastores
+- name: create geoserver datastores
+  file: path={{ geoserver.datadir }}/data/{{ item.value.workspace }}/{{ item.value.datastore }} 
         state=directory owner=tomcat8 group=tomcat8 mode=0755
+  with_dict: georchestra.user
 
-# créer l'entrepôt (datastore) de shp : "owncloud" # attention : le datastore doit être en UTF-8
-- name: create geoserver shp datastore
+# création des entrepôts (datastores) de shp # attention : le datastore doit être en UTF-8
+- name: create geoserver shp datastores
   command: >
-    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
-         -d "<dataStore><name>{{ geoserver.datastore }}</name>
+    curl -v -u {{ item.value.name }}:{{ item.value.passwd }} -XPOST -H "Content-type: text/xml"
+         -d "<dataStore><name>{{ item.value.datastore }}</name>
                 <description>shp dans owncloud</description>
                 <type>Directory of spatial files (shapefiles)</type>
                 <enabled>true</enabled>
                 <connectionParameters>
                 <entry key=\"charset\">UTF-8</entry>
-                <entry key=\"url\">file:data/{{ geoserver.workspace }}/{{ geoserver.datastore }}</entry>
+                <entry key=\"url\">file:data/{{ item.value.workspace }}/{{ item.value.datastore }}</entry>
                 <entry key=\"enable spatial index\">true</entry>
                 <entry key=\"cache and reuse memory maps\">true</entry>
                 </connectionParameters> 
              </dataStore>"
-         "{{ georchestra.url }}/geoserver/rest/workspaces/{{ geoserver.workspace }}/datastores"
+         "{{ georchestra.url }}/geoserver/rest/workspaces/{{ item.value.workspace }}/datastores"
+  with_dict: georchestra.user
 
-# créer l'entrepôt postgis de shp
-- name: create geoserver postgis datastore
+# création des entrepôts postgis
+- name: create geoserver postgis datastores
   command: >
-    curl -v -u {{ georchestra.open_user }}:{{ georchestra.open_passwd }} -XPOST -H "Content-type: text/xml"
+    curl -v -u {{ item.value.name }}:{{ item.value.passwd }} -XPOST -H "Content-type: text/xml"
          -d "<dataStore>
-               <name>{{ geoserver.pg_datastore }}</name>
+               <name>{{ item.value.pg_datastore }}</name>
                <connectionParameters>
                  <host>localhost</host>
                  <port>5432</port>
-                 <database>{{ geoserver.db.name }}</database>
+                 <database>{{ item.value.db }}</database>
                  <user>{{ geoserver.db.user }}</user>
                  <passwd>{{ geoserver.db.pass }}</passwd>
                  <dbtype>postgis</dbtype>
                </connectionParameters>
              </dataStore>"
-         https://{{ georchestra.fqdn }}/geoserver/rest/workspaces/geosync/datastores
+         https://{{ georchestra.fqdn }}/geoserver/rest/workspaces/{{ item.value.workspace }}/datastores
+  with_dict: georchestra.user
+
