@@ -1,0 +1,12 @@
+dn: uid={{ georchestra.user.open.name }},ou=users,{{ openldap.basedn }}
+mail: {{ openldap_adminemail }}
+uid: {{ georchestra.user.open.name }}
+givenName: {{ georchestra.user.open.name }}
+objectClass: top
+objectClass: person
+objectClass: organizationalPerson
+objectClass: inetOrgPerson
+sn: {{ georchestra.user.open.name }}
+cn: georchestra {{ georchestra.user.open.name }}
+userpassword: {SSHA}wSCVIRaRXKdD/7XNVBZRBJWBfDQINTMk
+

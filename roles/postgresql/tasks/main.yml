@@ -1,0 +1,30 @@
+- name: create geosync database user
+  sudo: yes
+  sudo_user: postgres
+  postgresql_user: name={{ geoserver.db.user }} password={{ geoserver.db.pass }}
+
+- name: create geoserver databases
+  sudo: yes
+  sudo_user: postgres
+  postgresql_db: name={{ item.value.db }} owner={{ geoserver.db.user }} template=template0 encoding=UTF8
+  with_dict: georchestra.user
+
+- name: adds postgis to the geoserver database
+  sudo: yes
+  sudo_user: postgres
+  postgresql_ext: name=postgis db={{ item.value.db }}
+  with_dict: georchestra.user
+
+- name: modify postgresql.conf
+  replace: dest=/etc/postgresql/9.4/main/postgresql.conf
+           regexp="#listen_addresses = 'localhost'"
+           replace="listen_addresses = '*'" backup=yes
+  notify: restart postgresql
+
+- name: modify pg_hba.conf
+  replace: dest=/etc/postgresql/9.4/main/pg_hba.conf
+           regexp='(host\s+all\s+all\s+127.0.0.1/32\s+md5)$'
+           replace='\1\nhost    all    all    {{ item.value  }}    md5' backup=yes
+  notify: restart postgresql
+  with_dict: my_networks
+
