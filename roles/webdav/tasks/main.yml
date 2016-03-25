@@ -13,8 +13,8 @@
   file: path=/home/{{ item.value.name }}/.davfs2 state=directory owner={{ item.value.name }} group=georchestra mode=0755
   with_dict: georchestra.user
 
-# le fichier .davfs2/secret permet à georchestra.user.xxxx de réaliser le montage webdav vers owncloud
-- name: template pgpass for georchestra.user.xxxx user
+# le fichier .davfs2/secrets permet à georchestra.user.xxxx de réaliser le montage webdav vers owncloud
+- name: template .davfs2/secrets for georchestra.user.xxxx user
   template: src=secrets.j2
             dest=/home/{{ item.value.name }}/.davfs2/secrets
             owner={{ item.value.name }} group=georchestra mode=0600  

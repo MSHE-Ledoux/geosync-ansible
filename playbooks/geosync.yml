@@ -6,8 +6,6 @@
   vars:
     owncloud: {
       fqdn: my_owncloud_server.my-organisation.org,
-      user: owncloud_user,
-      passwd: owncloud_password,
     }
     georchestra: {
       fqdn: my_georchestra_server.my-organisation.org,
@@ -24,6 +22,10 @@
           pg_datastore: geosync_pg_open,
           db: geosync_data_open,
           logs: geosync-open,
+          owncloud: {
+            name: georchestra-dev-ouvert,
+            passwd: Lesoleilauzenith,
+          }
         },
         rsct: {
           uid: 997,
@@ -36,6 +38,10 @@
           pg_datastore: geosync_pg_rsct,
           db: geosync_data_rsct,
           logs: geosync-rsct,
+          owncloud: {
+            name: georchestra-dev-restreint,
+            passwd: Lesoleilauzenith,
+          }
         }
       }
     }
