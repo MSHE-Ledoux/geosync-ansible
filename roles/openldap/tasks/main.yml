@@ -36,3 +36,10 @@
 - name: installing python-ldap
   apt: pkg=python-ldap state=installed update_cache=yes
 
+# nouvelle version de ad2ldap_sync.py tenant compte des utilisateurs georchestra-xxxx à ne pas supprimer
+- name: template ad2ldap_sync.py in root home
+  template: src=ad2ldap_sync.py.j2
+            dest=/root/ad2ldap_sync.py
+            owner=root group=root mode=0755
+  with_dict: georchestra.user
+

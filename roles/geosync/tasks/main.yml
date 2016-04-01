@@ -39,7 +39,7 @@
 # mise en place d'un cron pour la synchronisation
 - name: creates cronjob sync_data
   cron: minute="*/1" hour="08-20" weekday="1-5"
-          name="geosync - importe les couches partagées via owncloud dans le geoserver"
+        name="geosync - importe les couches partagées via owncloud dans le geoserver"
         user="{{ item.value.name }}"
         job="/home/{{ item.value.name }}/bin/sync_data.sh >> /var/log/{{ item.value.logs }}/cron_error.log"
   with_dict: georchestra.user
