@@ -13,3 +13,4 @@ The project manager is Ernest Chiarello.
 
 The project is funded by the MSHE-Besançon.
 
+![MSHE-Besançon](mshe.png)
