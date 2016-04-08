@@ -1,3 +1,5 @@
+![Plateforme GeoBFC](images/geobfc.jpg)
+
 GeoSync was originally created in 2015 by Alexandre Maindron and Martin Tovmassian.
 
     Alexandre MAINDRON <alexandre@exmackina.com>
@@ -13,5 +15,5 @@ The project manager is Ernest Chiarello.
 
 The project is funded by the MSHE-Besançon.
 
-![MSHE-Besançon](mshe.png)
+![MSHE-Besançon](images/mshe.png)
 
