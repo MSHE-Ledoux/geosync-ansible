@@ -15,7 +15,7 @@ Ernest Chiarello is the project manager ; he is member of the research laborator
 
 ![Théma](images/théma.jpg)
 
-The project is funded by the [MSHE of Besançon](http://mshe.univ-fcomte.fr), USR3124 <CNRS - University of Franche Comte>.
+The project is funded by the [MSHE of Besançon](http://mshe.univ-fcomte.fr), USR3124 "CNRS - University of Franche Comte".
 
 ![MSHE-Besançon](images/mshe.png)
 
