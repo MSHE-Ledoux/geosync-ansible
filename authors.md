@@ -14,6 +14,8 @@ He is member of the research laboratory [ThéMA](http://thema.univ-fcomte.fr/)
 
     Ernest CHIARELLO <ernest.chiarello@univ-fcomte.fr>
 
+![Théma](images/théma.jpg)
+
 The project is funded by the MSHE-Besançon.
 
 ![MSHE-Besançon](images/mshe.png)
