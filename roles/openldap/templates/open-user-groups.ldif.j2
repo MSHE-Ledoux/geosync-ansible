@@ -1,14 +1,14 @@
-dn: cn=ADMINISTRATOR,ou=groups,{{ openldap.basedn }}
+dn: cn=ADMINISTRATOR,ou=roles,{{ openldap.basedn }}
 changetype: modify
 add: member
 member: uid={{ georchestra.user.open.name }},ou=users,{{ openldap.basedn }}
 
-dn: cn=MOD_LDAPADMIN,ou=groups,{{ openldap.basedn }}
+dn: cn=MOD_LDAPADMIN,ou=roles,{{ openldap.basedn }}
 changetype: modify
 add: member
 member: uid={{ georchestra.user.open.name }},ou=users,{{ openldap.basedn }}
 
-dn: cn=MOD_ANALYTICS,ou=groups,{{ openldap.basedn }}
+dn: cn=MOD_ANALYTICS,ou=roles,{{ openldap.basedn }}
 changetype: modify
 add: member
 member: uid={{ georchestra.user.open.name }},ou=users,{{ openldap.basedn }}

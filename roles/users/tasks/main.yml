@@ -66,3 +66,13 @@
   file: path=/home/{{ item.value.name }}/tmp state=directory owner={{ item.value.name }} group=georchestra mode=0755
   with_dict: georchestra.user
 
+# installation de owslib
+- name: installing python-dev
+  apt: pkg=python-dev state=installed update_cache=yes
+
+- name: installing python-pip
+  apt: pkg=python-pip state=installed update_cache=yes
+
+- name: installing owslib
+  pip: name=owslib state=latest
+
